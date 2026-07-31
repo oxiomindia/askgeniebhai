@@ -9,9 +9,19 @@ Phase: Development foundation only
 
 FlutterFlow is the primary frontend for Ask Genie Bhai v1.0.
 
-Supabase is the primary backend for Ask Genie Bhai v1.0.
+Supabase PostgreSQL is the primary application database.
 
-This document does not approve application screens, database tables, mock data, generated FlutterFlow pages, exported Flutter code, package installation, or application implementation. It only defines the required foundation for connecting FlutterFlow and Supabase cleanly before development begins.
+Supabase Auth is the primary authentication system.
+
+Cloudflare R2 is the canonical file and media storage platform.
+
+Vercel is the canonical hosting platform for the web application and future backend services.
+
+Razorpay is the launch-phase payments platform.
+
+Maps are deferred until a product requirement explicitly needs them.
+
+This document does not approve application screens, database tables, mock data, generated FlutterFlow pages, exported Flutter code, package installation, or application implementation. It only defines the required foundation for connecting the canonical stack cleanly before development begins.
 
 ## Blueprint Alignment Gate
 
@@ -26,6 +36,64 @@ Before any implementation task starts, confirm that the work aligns with:
 
 If a request conflicts with any of these, stop and report the conflict before implementation.
 
+## Canonical Architecture
+
+```mermaid
+flowchart LR
+    User["User"] --> FlutterFlow["FlutterFlow mobile app"]
+    FlutterFlow --> Supabase["Supabase PostgreSQL + Auth"]
+    Supabase --> R2["Cloudflare R2 media storage"]
+    R2 --> Razorpay["Razorpay payments"]
+```
+
+The diagram shows the approved product stack at the foundation level. It is not a data-flow contract for every future transaction. Each integration must still be approved before implementation.
+
+## Component Responsibilities
+
+FlutterFlow owns the mobile-first frontend experience. It should prioritize quick traveller workflows, large touch targets, minimal typing, and one primary action per screen.
+
+Supabase PostgreSQL owns structured application data. It should store transactional records, user-linked domain data, and approved relational state.
+
+Supabase Auth owns identity, sessions, and authenticated user context. It should provide JWT-based authentication for database access through Row Level Security.
+
+Cloudflare R2 owns media and file storage. It should store approved user or operational files such as images, documents, and other binary assets. It is the canonical storage choice; Supabase Storage is not the primary storage solution for Ask Genie Bhai.
+
+Vercel owns the web application surface generated for internal testing or future web needs, and future backend services that require server-side secrets, API orchestration, payment callbacks, or privileged operations.
+
+Razorpay owns launch-phase payment collection and payment lifecycle integration.
+
+Maps are intentionally deferred. Do not introduce maps, geocoding, routing, or location-heavy workflows until a future approved requirement needs them.
+
+## Architecture Decisions
+
+### FlutterFlow
+
+FlutterFlow is selected because Ask Genie Bhai is mobile-first and needs fast iteration on native-feeling Android and iOS workflows. The frontend must remain traveller-friendly: fast, readable, low-friction, and optimized for one-handed use.
+
+### Supabase PostgreSQL
+
+Supabase PostgreSQL is selected for structured data because it provides a managed Postgres foundation with relational modeling, access policies, auto-generated APIs, and a clear path for transaction-first workflows.
+
+### Supabase Auth
+
+Supabase Auth is selected because it integrates naturally with Supabase PostgreSQL and Row Level Security. Authentication state can be used to scope database access per user without exposing privileged credentials to the mobile client.
+
+### Cloudflare R2
+
+Cloudflare R2 is selected as the canonical media storage layer because media and binary files should be separated from transactional database records. R2 provides object storage suitable for durable file storage and future CDN-oriented delivery patterns while keeping Supabase focused on database and authentication responsibilities.
+
+### Vercel
+
+Vercel is selected for the web application and future backend services. Web is not a customer-facing MVP surface, but Vercel provides a clear future path for internal web previews, operational services, server-side integrations, API endpoints, payment callbacks, and secure handling of secrets that must not live in FlutterFlow.
+
+### Razorpay
+
+Razorpay is selected for launch-phase payments because the product needs an India-ready payment path during launch. Payment flows must remain transaction-first and should be implemented only after the payment requirements and backend callback strategy are approved.
+
+### Maps Deferred
+
+Maps are deferred to keep the MVP focused. Location features can add complexity, permissions, API cost, and UX weight. They should be introduced only when an approved user intent requires them.
+
 ## Supabase Project Creation
 
 Create one Supabase project for Ask Genie Bhai under the correct Oxiom India ownership context.
@@ -38,7 +106,7 @@ Recommended setup:
 4. Do not commit the database password, service role key, connection string, or any secret to GitHub.
 5. Confirm the project is healthy before connecting FlutterFlow.
 
-Supabase projects provide a dedicated Postgres database, auto-generated APIs, Auth, Edge Functions, Realtime, and Storage. Only enable product features that are required for the approved MVP.
+Supabase should be used for PostgreSQL, Auth, RLS-backed data access, and approved database capabilities. Do not treat Supabase Storage as the default media layer.
 
 Reference: https://supabase.com/docs/guides/platform
 
@@ -91,27 +159,29 @@ Do not rely on Supabase's default SMTP service for production. Supabase document
 
 Reference: https://supabase.com/docs/guides/auth/auth-smtp
 
-## Storage Configuration
+## File and Media Storage Configuration
 
-Use Supabase Storage only for approved user or operational files.
+Cloudflare R2 is the canonical file and media storage platform for Ask Genie Bhai.
 
 Foundation rules:
 
-- Do not create storage buckets in this phase.
-- Prefer private buckets by default.
-- Use public buckets only for explicitly public, non-sensitive assets.
-- Define file size and MIME type restrictions at the bucket level when buckets are approved.
-- Control private file access with Storage RLS policies and signed URLs where needed.
-- Never expose the service role key in FlutterFlow or client-side code.
+- Do not create R2 buckets in this phase.
+- Do not use Supabase Storage as the primary storage solution.
+- Store file metadata in Supabase PostgreSQL only after the data model is approved.
+- Store binary file objects in Cloudflare R2 after bucket strategy, naming, retention, access control, and backup expectations are approved.
+- Prefer private object access by default.
+- Use public access only for explicitly public, non-sensitive assets.
+- Never expose R2 credentials in FlutterFlow or client-side code.
+- Use Vercel backend services or another approved server-side layer for signed URLs, upload authorization, callbacks, and privileged storage operations.
 
-Storage objects are not restored by database backup restores; storage backup must be planned separately before production use.
+Why R2 was selected:
 
-References:
+- It keeps binary media separate from transactional data.
+- It lets Supabase remain focused on PostgreSQL, Auth, and RLS-backed structured data.
+- It provides object storage that can scale independently from the database.
+- It supports a long-term architecture where media delivery, lifecycle policies, and server-side access control can evolve without reshaping the core database.
 
-- https://supabase.com/docs/guides/storage
-- https://supabase.com/docs/guides/storage/buckets/fundamentals
-- https://supabase.com/docs/guides/storage/security/access-control
-- https://supabase.com/docs/guides/storage/schema/design
+Supabase Storage may be evaluated later only with explicit approval for a specific use case. It is not the canonical storage layer.
 
 ## Database Connection
 
@@ -129,7 +199,7 @@ Reference: https://supabase.com/docs/guides/database/overview
 
 ## FlutterFlow Connection
 
-Use FlutterFlow's Supabase integration as the primary connection path.
+Use FlutterFlow's Supabase integration as the primary database and auth connection path.
 
 Preferred connection method:
 
@@ -157,10 +227,13 @@ Not allowed in FlutterFlow client configuration:
 - Supabase service role key.
 - Database password.
 - Direct Postgres connection string.
+- Cloudflare R2 access key ID.
+- Cloudflare R2 secret access key.
+- Razorpay key secret.
 - SMTP password.
 - Third-party API secrets.
 
-Server-only secrets belong in Supabase Edge Function secrets or another approved backend secret store.
+Server-only secrets belong in Vercel environment variables, Supabase server-side configuration where approved, or another approved backend secret store.
 
 ## Environment Variables
 
@@ -171,16 +244,23 @@ Recommended naming for future environments:
 - `SUPABASE_SERVICE_ROLE_KEY`: server-only, never exposed to FlutterFlow client code.
 - `SUPABASE_DB_PASSWORD`: server-only database password.
 - `SUPABASE_DB_URL`: server-only database connection string.
+- `R2_ACCOUNT_ID`: server-only Cloudflare account identifier.
+- `R2_BUCKET_NAME`: approved R2 bucket name.
+- `R2_ACCESS_KEY_ID`: server-only R2 access key ID.
+- `R2_SECRET_ACCESS_KEY`: server-only R2 secret access key.
+- `R2_PUBLIC_BASE_URL`: public media base URL only if public delivery is approved.
+- `RAZORPAY_KEY_ID`: client-safe only if required by the approved Razorpay integration pattern.
+- `RAZORPAY_KEY_SECRET`: server-only Razorpay secret.
 - `SMTP_HOST`: server-only SMTP host.
 - `SMTP_PORT`: server-only SMTP port.
 - `SMTP_USER`: server-only SMTP user.
 - `SMTP_PASS`: server-only SMTP password.
 
-FlutterFlow should store only client-safe values needed for mobile runtime. Supabase secrets and operational credentials must stay outside the client.
+FlutterFlow should store only client-safe values needed for mobile runtime. Supabase service credentials, R2 credentials, Razorpay secrets, and operational credentials must stay outside the client.
 
 ## Row Level Security
 
-RLS is mandatory for client-accessible tables.
+RLS is mandatory for client-accessible Supabase tables.
 
 Foundation policy:
 
@@ -189,6 +269,7 @@ Foundation policy:
 - The anon key is acceptable only because RLS controls what each user can access.
 - Policies must be reviewed before release.
 - Temporary development shortcuts must not be promoted to production.
+- RLS governs structured data in Supabase; R2 object access must be controlled separately through approved server-side access rules.
 
 Supabase Auth integrates with RLS through JWTs, allowing database access to be scoped per authenticated user.
 
@@ -205,9 +286,10 @@ Approved foundation-only setup:
 
 - Confirm the Supabase project exists.
 - Confirm Auth settings are configured.
-- Confirm Storage is available but has no approved buckets yet.
 - Confirm RLS policy standards are documented before schema work begins.
 - Confirm future schema changes are reviewed through pull requests or approved Supabase migration workflow.
+- Confirm R2 storage strategy is approved before bucket creation.
+- Confirm Razorpay integration strategy is approved before payment work begins.
 
 When database design is approved later, create tables from an approved schema plan only.
 
@@ -240,7 +322,7 @@ Minimum strategy before public release:
 - Evaluate Point-in-Time Recovery before handling important production transactions.
 - Schedule manual logical exports for major release milestones.
 - Maintain off-platform backup records for critical operational configuration.
-- Plan Storage object backup separately; database backups include Storage metadata, not the actual stored objects.
+- Plan Cloudflare R2 object backup, retention, and recovery separately from Supabase database backups.
 - Restrict project deletion permissions to trusted owners only.
 
 References:
@@ -257,10 +339,10 @@ FlutterFlow frontend:
 - [ ] Android package name is approved.
 - [ ] iOS bundle ID is approved.
 - [ ] No customer-facing web product is configured for MVP.
-- [ ] FlutterFlow Supabase integration is enabled.
+- [ ] FlutterFlow Supabase integration is enabled for database and auth.
 - [ ] Supabase schema sync can run successfully after future schema approval.
 
-Supabase backend:
+Supabase database and auth:
 
 - [ ] Supabase project exists under the approved owner.
 - [ ] Region is approved before implementation starts.
@@ -271,8 +353,22 @@ Supabase backend:
 - [ ] Email Auth is configured.
 - [ ] Custom SMTP plan is approved before public testing.
 - [ ] RLS is mandatory for future app tables.
-- [ ] Storage bucket strategy is approved before bucket creation.
 - [ ] Backup plan is approved before production data.
+
+Cloudflare R2 storage:
+
+- [ ] R2 is confirmed as the canonical file and media storage platform.
+- [ ] Bucket strategy is approved before bucket creation.
+- [ ] Public/private access model is approved before upload flows.
+- [ ] R2 credentials are stored server-side only.
+- [ ] Signed URL or upload authorization strategy is approved before implementation.
+
+Vercel and Razorpay:
+
+- [ ] Vercel is confirmed for web application and future backend services.
+- [ ] Server-side secret handling strategy is approved before backend endpoints.
+- [ ] Razorpay is confirmed for launch-phase payments.
+- [ ] Razorpay callback and verification strategy is approved before payment implementation.
 
 Repository and governance:
 
@@ -298,13 +394,16 @@ Custom Actions may be appropriate for:
 - Client-side file handling that needs explicit mobile behavior.
 - Calling an approved API when FlutterFlow's built-in actions are insufficient.
 
-Supabase Edge Functions may be appropriate for:
+Vercel backend services may be appropriate for:
 
 - Operations requiring secret keys.
-- Privileged writes that must bypass client permissions safely.
-- Payment, booking, notification, or third-party service callbacks.
+- R2 signed URL creation or upload authorization.
+- Razorpay order creation, callback validation, or webhook handling.
+- Payment, booking, notification, or third-party service orchestration.
 - Server-side rate limiting or abuse controls.
 - Multi-step backend transactions that must be atomic.
+
+Supabase Edge Functions are not the canonical launch path under this architecture. They may be considered later only with explicit approval for a narrow database-adjacent use case.
 
 Do not use custom code to work around unclear product decisions. If the requirement is ambiguous, stop and request approval.
 
@@ -361,14 +460,32 @@ References:
 - https://docs.flutterflow.io/exporting/push-to-github/
 - https://docs.flutterflow.io/collaboration/branching/
 
+## Long-Term Roadmap Alignment
+
+This foundation keeps the MVP lightweight while leaving room for future growth:
+
+- Mobile remains the primary customer experience.
+- Supabase remains the system of record for structured product data and auth.
+- R2 scales media independently from the database.
+- Vercel can host future web and backend service needs without changing the mobile-first product posture.
+- Razorpay supports launch payments without forcing payment complexity into the mobile client.
+- Maps remain deferred until a clear traveller workflow requires them.
+
+Every future addition must still answer the governing product question: would this feel natural and effortless for a traveller using a mobile phone while on the move?
+
 ## Completion Criteria for This Phase
 
 This foundation phase is complete only when:
 
 - FlutterFlow is confirmed as the primary frontend.
-- Supabase is confirmed as the primary backend.
+- Supabase PostgreSQL is confirmed as the primary database.
+- Supabase Auth is confirmed as the primary authentication system.
+- Cloudflare R2 is confirmed as canonical file and media storage.
+- Vercel is confirmed for web application and future backend services.
+- Razorpay is confirmed for launch-phase payments.
+- Maps remain deferred until required.
 - This guide is reviewed and approved.
 - Supabase project ownership and region are approved.
 - FlutterFlow can connect to the approved Supabase project.
-- Authentication, storage, RLS, environment variables, and backup expectations are understood before implementation.
-- No app screens, code, database tables, mock data, or generated project files have been created.
+- Authentication, database, RLS, R2 storage, environment variables, and backup expectations are understood before implementation.
+- No app screens, code, database tables, buckets, mock data, or generated project files have been created.
