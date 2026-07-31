@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { env } from "@/config/env";
-import type { Database } from "@/types/supabase";
+import { env } from "../../config/env";
+import type { Database } from "../../types/supabase";
 
 // Refreshes the Supabase auth session on every matched request so server
 // components always see a valid session. No redirect/auth-guard logic here
