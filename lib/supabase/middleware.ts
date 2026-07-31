@@ -4,8 +4,12 @@ import { env } from "../../config/env";
 import type { Database } from "../../types/supabase";
 
 // Refreshes the Supabase auth session on every matched request so server
-// components always see a valid session. No redirect/auth-guard logic here
-// yet — that belongs to the build that introduces protected routes.
+// components always see a valid session, and returns the user so the
+// caller (middleware.ts) can enforce route-level authorization — e.g. the
+// admin console — with a true HTTP redirect before any rendering starts.
+// A redirect issued later, inside a layout, can't always set the top-level
+// status code once Next.js has begun streaming the shell; middleware runs
+// before any of that, so it's the reliable place for this check.
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
@@ -32,7 +36,9 @@ export async function updateSession(request: NextRequest) {
 
   // Do not add logic between createServerClient and getUser — it revalidates
   // the session token and must run on every request this middleware handles.
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  return supabaseResponse;
+  return { response: supabaseResponse, user };
 }

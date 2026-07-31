@@ -22,8 +22,18 @@ export const env = {
     "NEXT_PUBLIC_SUPABASE_ANON_KEY",
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   ),
-  // Server-only. Never imported from client components. Undefined until a
-  // server action or route handler actually needs privileged Supabase
-  // access (none does yet in this foundation).
+  // Server-only. Never imported from client components. Required by
+  // lib/supabase/admin.ts to bypass RLS for admin-console reads (partner,
+  // user, and booking rows outside the current user's own rows) — checked
+  // there, not here, so pages that don't need it still build without it.
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+  // Server-only. Comma-separated allowlist of admin emails, checked against
+  // the authenticated user in lib/admin-auth.ts. Authorization only —
+  // authentication is still Supabase Auth. No admin role/flag exists in the
+  // schema (see docs/adr/0001_PROJECT_FOUNDATION.md's "do not modify
+  // schema" constraint), so this is the non-schema-changing alternative.
+  adminEmails: (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean),
 } as const;
