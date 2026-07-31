@@ -91,6 +91,25 @@ These five intents are the entire MVP surface. No sixth intent, no
 secondary home-screen tile, and no "explore more" section may be added
 without amending this document first (see [Governance](#governance)).
 
+### Naming Convention: Intent vs. Partner Category
+
+Two related but distinct naming conventions are used across this document
+set:
+
+| Term | Definition | Where it's used |
+|---|---|---|
+| **Traveler-facing Intent** | The full name shown to the traveler on the home screen: Freshen Up, Keep My Bags, Rest, Book a Cab, Book a Room. | Product copy, UX flows, roadmap, ADR. |
+| **Internal Partner Category** | The shorter operational label used when referring to the partner/service side of the same intent: Freshen Up, Bag Storage, Rest, Cab, Room. | Partner Standards, `PARTNER_QUALITY_STANDARDS.md`, `partner_services` entity in `DATABASE_BLUEPRINT.md`. |
+
+Every internal Partner Category maps to exactly one traveler-facing
+Intent, one-to-one, in the order above. Freshen Up and Rest use the same
+label in both conventions; Keep My Bags / Bag Storage, Book a Cab / Cab,
+and Book a Room / Room are the same underlying intent referred to by its
+shorter internal label. Wherever the internal label is used, it must be
+stated alongside the traveler-facing intent name at first use in that
+document (e.g. "Bag Storage (Keep My Bags)") so the mapping is never
+ambiguous.
+
 ---
 
 ## Business Filter
@@ -334,16 +353,18 @@ bookings ──< payments (future)
 ## Partner Standards
 
 The five MVP intents map directly to five partner categories, each with its
-own quality bar. Full detail lives in
+own quality bar (see
+[Naming Convention: Intent vs. Partner Category](#naming-convention-intent-vs-partner-category)).
+Full detail lives in
 [PARTNER_QUALITY_STANDARDS.md](./PARTNER_QUALITY_STANDARDS.md).
 
-| Category | Core quality expectation |
-|---|---|
-| **Freshen Up** | Clean, private, functioning shower/washroom facilities with towels and basic amenities |
-| **Bag Storage** | Secure, monitored storage with tamper-evident handling and clear liability terms |
-| **Rest** | A clean, quiet, private or semi-private space suitable for short-duration rest |
-| **Cab** | Verified driver, well-maintained vehicle, on-time pickup |
-| **Room** | Verified cleanliness, safety, and accurate representation of the room offered |
+| Intent | Partner Category | Core quality expectation |
+|---|---|---|
+| **Freshen Up** | Freshen Up | Clean, private, functioning shower/washroom facilities with towels and basic amenities |
+| **Keep My Bags** | Bag Storage | Secure, monitored storage with tamper-evident handling and clear liability terms |
+| **Rest** | Rest | A clean, quiet, private or semi-private space suitable for short-duration rest |
+| **Book a Cab** | Cab | Verified driver, well-maintained vehicle, on-time pickup |
+| **Book a Room** | Room | Verified cleanliness, safety, and accurate representation of the room offered |
 
 ---
 

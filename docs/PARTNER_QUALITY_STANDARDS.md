@@ -9,6 +9,10 @@ Phase: Documentation-only foundation
 > This document is the SOP that trust is built on. No partner or partner
 > location may be listed for a service without passing the verification
 > checklist defined here.
+>
+> If anything in this document conflicts with the Master Blueprint, the
+> Master Blueprint is the canonical source and this document must be
+> updated accordingly.
 
 ---
 
@@ -60,6 +64,10 @@ other dimensions — quality is a floor, not an average.
 
 ## Per-Category Standards
 
+Category names below are the Internal Partner Category labels defined in
+[00_ASK_GENIE_BHAI_BLUEPRINT.md](./00_ASK_GENIE_BHAI_BLUEPRINT.md#naming-convention-intent-vs-partner-category),
+shown alongside their traveler-facing Intent name.
+
 ### Freshen Up
 
 | Requirement | Detail |
@@ -88,7 +96,7 @@ other dimensions — quality is a floor, not an average.
 | Privacy | Private or semi-private space appropriate to what was listed. |
 | Security | Space is lockable or monitored; belongings can be kept safely while resting. |
 
-### Cab
+### Cab (Book a Cab)
 
 | Requirement | Detail |
 |---|---|
@@ -97,7 +105,7 @@ other dimensions — quality is a floor, not an average.
 | Reliability | On-time pickup track record meets the minimum threshold; repeated lateness triggers re-verification. Critical. |
 | Insurance | Valid vehicle and passenger insurance coverage. |
 
-### Room
+### Room (Book a Room)
 
 | Requirement | Detail |
 |---|---|

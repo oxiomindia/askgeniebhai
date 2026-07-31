@@ -7,6 +7,10 @@ Phase: Documentation-only foundation
 > Every screen, flow, and component must be evaluated against this
 > document before it ships. If a design decision conflicts with these
 > principles, the principles win — not the design.
+>
+> If anything in this document conflicts with the Master Blueprint, the
+> Master Blueprint is the canonical source and this document must be
+> updated accordingly.
 
 ---
 

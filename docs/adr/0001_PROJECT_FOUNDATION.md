@@ -20,21 +20,18 @@ and quick reference.
 
 **Decision:** FlutterFlow is the canonical frontend for Ask Genie Bhai.
 
-**Rationale:** The product is mobile-first from day one and needs fast
-iteration on native-feeling Android and iOS experiences. FlutterFlow
-provides that speed while still allowing custom code where a required
-behavior cannot be modeled visually.
+**Rationale:** See
+[Canonical Technology Stack](../00_ASK_GENIE_BHAI_BLUEPRINT.md#canonical-technology-stack)
+in the Master Blueprint.
 
 ### 2. Supabase selected for database and authentication
 
 **Decision:** Supabase PostgreSQL is the canonical database; Supabase Auth
 is the canonical authentication system.
 
-**Rationale:** The product is fundamentally relational and transactional.
-Supabase provides managed Postgres with Row Level Security and
-auto-generated APIs, and Supabase Auth integrates directly with that RLS
-layer via JWTs — letting data access be scoped to the authenticated user
-without a custom identity system.
+**Rationale:** See
+[Canonical Technology Stack](../00_ASK_GENIE_BHAI_BLUEPRINT.md#canonical-technology-stack)
+in the Master Blueprint.
 
 ### 3. Cloudflare R2 selected for storage
 
@@ -42,19 +39,18 @@ without a custom identity system.
 platform. Supabase Storage is explicitly not used as the primary storage
 layer.
 
-**Rationale:** Separating binary media from transactional data keeps
-Supabase focused on structured data and auth, while letting object
-storage scale independently with a clear path to CDN-backed delivery.
+**Rationale:** See
+[Canonical Technology Stack](../00_ASK_GENIE_BHAI_BLUEPRINT.md#canonical-technology-stack)
+in the Master Blueprint.
 
 ### 4. Vercel selected for hosting and future backend services
 
 **Decision:** Vercel hosts the web surface and any future backend
 services requiring server-side secrets.
 
-**Rationale:** Some operations (R2 signed URLs, Razorpay order creation
-and webhook verification) require secrets that must never live in the
-FlutterFlow client. Vercel provides that server-side home without
-requiring a separate, self-hosted backend.
+**Rationale:** See
+[Canonical Technology Stack](../00_ASK_GENIE_BHAI_BLUEPRINT.md#canonical-technology-stack)
+in the Master Blueprint.
 
 ### 5. Razorpay deferred until launch
 
@@ -62,20 +58,18 @@ requiring a separate, self-hosted backend.
 integration is deferred to the launch phase (Phase 2 of the
 [Roadmap](../ROADMAP.md)) rather than built during MVP.
 
-**Rationale:** The five MVP intents can be validated without a live
-payment integration. Deferring payments keeps the MVP scope smaller and
-avoids building payment infrastructure before the core transaction flow
-is proven.
+**Rationale:** See
+[Canonical Technology Stack](../00_ASK_GENIE_BHAI_BLUEPRINT.md#canonical-technology-stack)
+in the Master Blueprint.
 
 ### 6. Maps deferred
 
 **Decision:** No mapping, geocoding, or routing provider is included in
 the current architecture.
 
-**Rationale:** None of the five MVP intents strictly require a map.
-Location features add permissions overhead, API cost, and UX weight that
-is not justified until a specific approved workflow needs it (see Phase 3
-of the [Roadmap](../ROADMAP.md)).
+**Rationale:** See
+[Canonical Technology Stack](../00_ASK_GENIE_BHAI_BLUEPRINT.md#canonical-technology-stack)
+in the Master Blueprint.
 
 ### 7. Five-intent MVP
 

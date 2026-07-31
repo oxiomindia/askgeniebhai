@@ -7,6 +7,10 @@ Phase: Documentation-only foundation
 > These guidelines apply to every future implementation PR, regardless of
 > which layer of the stack it touches (FlutterFlow custom code, Vercel
 > backend services, or any other approved surface).
+>
+> If anything in this document conflicts with the Master Blueprint, the
+> Master Blueprint is the canonical source and this document must be
+> updated accordingly.
 
 ---
 

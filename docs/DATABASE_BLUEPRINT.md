@@ -10,6 +10,12 @@ Phase: Documentation-only foundation
 > scripts**. Physical schema design is a separate, future, implementation
 > task that must be approved against this blueprint before any table is
 > created.
+>
+> This document is a companion to the canonical
+> [00_ASK_GENIE_BHAI_BLUEPRINT.md](./00_ASK_GENIE_BHAI_BLUEPRINT.md). If
+> anything in this document conflicts with the Master Blueprint, the
+> Master Blueprint is the canonical source and this document must be
+> updated accordingly.
 
 ---
 
@@ -20,7 +26,7 @@ Phase: Documentation-only foundation
 | `users` | A traveler with an authenticated identity (via Supabase Auth). The subject of every booking. |
 | `partners` | A business entity that provides one or more of the five MVP services. |
 | `partner_locations` | A physical location operated by a partner. A partner may have multiple locations. |
-| `partner_services` | A specific bookable service offered at a location, mapped to exactly one of the five MVP intents (Freshen Up, Keep My Bags, Rest, Cab, Room). |
+| `partner_services` | A specific bookable service offered at a location, mapped to exactly one of the five MVP intents: Freshen Up, Keep My Bags, Rest, Book a Cab, Book a Room (internal Partner Category labels: Freshen Up, Bag Storage, Rest, Cab, Room — see [Naming Convention: Intent vs. Partner Category](./00_ASK_GENIE_BHAI_BLUEPRINT.md#naming-convention-intent-vs-partner-category)). |
 | `availability` | Time-windowed capacity for a `partner_service` — what can be booked, and when. |
 | `bookings` | A traveler's transaction against a `partner_service` for a specific time window. |
 | `booking_status` | The lifecycle state history of a `booking` (e.g. requested, confirmed, in-progress, completed, cancelled). |

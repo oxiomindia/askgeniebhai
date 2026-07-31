@@ -9,6 +9,10 @@ Phase: Documentation-only foundation
 > may be pulled forward out of sequence without updating this document
 > and getting it reviewed — sequencing itself is a decision, not just a
 > scheduling detail.
+>
+> If anything in this document conflicts with the Master Blueprint, the
+> Master Blueprint is the canonical source and this document must be
+> updated accordingly.
 
 ---
 
