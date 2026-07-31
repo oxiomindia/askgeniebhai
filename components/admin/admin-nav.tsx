@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/partners", label: "Partners" },
+  { href: "/admin/onboarding", label: "Onboarding Queue" },
   { href: "/admin/verifications", label: "Verification Queue" },
   { href: "/admin/services", label: "Service Categories" },
   { href: "/admin/bookings", label: "Bookings" },
