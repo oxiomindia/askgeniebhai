@@ -11,12 +11,44 @@ function isAuthorizedAdmin(email: string | undefined | null) {
   return !!email && env.adminEmails.includes(email.toLowerCase());
 }
 
+// TEMPORARY diagnostic logging — see lib/supabase/middleware.ts for why.
+// Remove once the exact throwing statement is identified.
 export async function middleware(request: NextRequest) {
-  const { response, user } = await updateSession(request);
+  console.log(
+    `[DIAG middleware] step=start runtime=${process.env.NEXT_RUNTIME} url=${request.nextUrl.pathname}`,
+  );
+
+  let response;
+  let user;
+  try {
+    console.log(
+      `[DIAG middleware] step=updateSession:start url=${request.nextUrl.pathname}`,
+    );
+    const result = await updateSession(request);
+    response = result.response;
+    user = result.user;
+    console.log(
+      `[DIAG middleware] step=updateSession:ok hasUser=${!!user} url=${request.nextUrl.pathname}`,
+    );
+  } catch (error) {
+    console.error("[DIAG middleware] THROW step=updateSession", {
+      runtime: process.env.NEXT_RUNTIME,
+      url: request.nextUrl.pathname,
+      module: "middleware.ts",
+      function: "middleware",
+      errorName: error instanceof Error ? error.name : typeof error,
+      errorMessage: error instanceof Error ? error.message : String(error),
+      errorStack: error instanceof Error ? error.stack : undefined,
+    });
+    throw error;
+  }
 
   const { pathname } = request.nextUrl;
   const isAdminRoute = pathname.startsWith("/admin");
   const isAdminLoginRoute = pathname === "/admin/login";
+  console.log(
+    `[DIAG middleware] step=redirect-decision isAdminRoute=${isAdminRoute} isAdminLoginRoute=${isAdminLoginRoute} url=${pathname}`,
+  );
 
   if (isAdminRoute && !isAdminLoginRoute && !isAuthorizedAdmin(user?.email)) {
     const loginUrl = new URL("/admin/login", request.url);
@@ -29,9 +61,15 @@ export async function middleware(request: NextRequest) {
     for (const cookie of response.cookies.getAll()) {
       redirectResponse.cookies.set(cookie);
     }
+    console.log(
+      `[DIAG middleware] step=exit action=redirect-to-login url=${pathname}`,
+    );
     return redirectResponse;
   }
 
+  console.log(
+    `[DIAG middleware] step=exit action=pass-through url=${pathname}`,
+  );
   return response;
 }
 
