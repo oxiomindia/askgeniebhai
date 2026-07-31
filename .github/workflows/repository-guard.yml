@@ -1,0 +1,24 @@
+name: Repository Guard
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  repository-guard:
+    name: Validate Repository Boundary
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Verify repository identity
+        shell: bash
+        run: |
+          EXPECTED_REPOSITORY="oxiomindia/askgeniebhai"
+
+          if [ "${GITHUB_REPOSITORY}" != "${EXPECTED_REPOSITORY}" ]; then
+            echo "::error title=Repository Guard failed::This workflow is exclusive to the Ask Genie Bhai repository. Expected ${EXPECTED_REPOSITORY}, but found ${GITHUB_REPOSITORY}."
+            exit 1
+          fi
+
+          echo "Repository Guard passed: this workflow is running in ${EXPECTED_REPOSITORY}."
