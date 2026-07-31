@@ -155,6 +155,8 @@ export type Database = {
           content_type: string | null;
           created_at: string;
           id: string;
+          label: Database["public"]["Enums"]["media_label"] | null;
+          partner_id: string | null;
           partner_location_id: string | null;
           partner_service_id: string | null;
           storage_path: string;
@@ -163,6 +165,8 @@ export type Database = {
           content_type?: string | null;
           created_at?: string;
           id?: string;
+          label?: Database["public"]["Enums"]["media_label"] | null;
+          partner_id?: string | null;
           partner_location_id?: string | null;
           partner_service_id?: string | null;
           storage_path: string;
@@ -171,11 +175,20 @@ export type Database = {
           content_type?: string | null;
           created_at?: string;
           id?: string;
+          label?: Database["public"]["Enums"]["media_label"] | null;
+          partner_id?: string | null;
           partner_location_id?: string | null;
           partner_service_id?: string | null;
           storage_path?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: "media_partner_id_fkey";
+            columns: ["partner_id"];
+            isOneToOne: false;
+            referencedRelation: "partners";
+            referencedColumns: ["id"];
+          },
           {
             foreignKeyName: "media_partner_location_id_fkey";
             columns: ["partner_location_id"];
@@ -200,7 +213,10 @@ export type Database = {
           country: string;
           created_at: string;
           id: string;
+          latitude: number | null;
+          longitude: number | null;
           name: string;
+          onboarding_status: Database["public"]["Enums"]["partner_onboarding_status"];
           partner_id: string;
           postal_code: string | null;
           state: string | null;
@@ -213,7 +229,10 @@ export type Database = {
           country?: string;
           created_at?: string;
           id?: string;
+          latitude?: number | null;
+          longitude?: number | null;
           name: string;
+          onboarding_status?: Database["public"]["Enums"]["partner_onboarding_status"];
           partner_id: string;
           postal_code?: string | null;
           state?: string | null;
@@ -226,7 +245,10 @@ export type Database = {
           country?: string;
           created_at?: string;
           id?: string;
+          latitude?: number | null;
+          longitude?: number | null;
           name?: string;
+          onboarding_status?: Database["public"]["Enums"]["partner_onboarding_status"];
           partner_id?: string;
           postal_code?: string | null;
           state?: string | null;
@@ -291,27 +313,42 @@ export type Database = {
       };
       partners: {
         Row: {
+          bank_account_holder_name: string | null;
+          bank_account_number: string | null;
+          bank_ifsc_code: string | null;
           business_name: string;
           contact_email: string | null;
           contact_phone: string | null;
           created_at: string;
+          gst_number: string | null;
           id: string;
+          pan_number: string | null;
           updated_at: string;
         };
         Insert: {
+          bank_account_holder_name?: string | null;
+          bank_account_number?: string | null;
+          bank_ifsc_code?: string | null;
           business_name: string;
           contact_email?: string | null;
           contact_phone?: string | null;
           created_at?: string;
+          gst_number?: string | null;
           id?: string;
+          pan_number?: string | null;
           updated_at?: string;
         };
         Update: {
+          bank_account_holder_name?: string | null;
+          bank_account_number?: string | null;
+          bank_ifsc_code?: string | null;
           business_name?: string;
           contact_email?: string | null;
           contact_phone?: string | null;
           created_at?: string;
+          gst_number?: string | null;
           id?: string;
+          pan_number?: string | null;
           updated_at?: string;
         };
         Relationships: [];
@@ -437,7 +474,20 @@ export type Database = {
     Enums: {
       booking_status_value:
         "requested" | "confirmed" | "in_progress" | "completed" | "cancelled";
+      media_label:
+        | "hotel_photo"
+        | "gst_certificate"
+        | "pan_card"
+        | "business_registration_certificate"
+        | "bank_proof"
+        | "other";
       partner_category: "freshen_up" | "bag_storage" | "rest" | "cab" | "room";
+      partner_onboarding_status:
+        | "draft"
+        | "submitted"
+        | "under_review"
+        | "approved"
+        | "rejected";
       verification_status: "pending" | "passed" | "failed";
     };
     CompositeTypes: {
@@ -573,7 +623,22 @@ export const Constants = {
         "completed",
         "cancelled",
       ],
+      media_label: [
+        "hotel_photo",
+        "gst_certificate",
+        "pan_card",
+        "business_registration_certificate",
+        "bank_proof",
+        "other",
+      ],
       partner_category: ["freshen_up", "bag_storage", "rest", "cab", "room"],
+      partner_onboarding_status: [
+        "draft",
+        "submitted",
+        "under_review",
+        "approved",
+        "rejected",
+      ],
       verification_status: ["pending", "passed", "failed"],
     },
   },

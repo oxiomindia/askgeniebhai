@@ -79,11 +79,16 @@ export default async function AdminPartnersPage({
 
   return (
     <div className="flex flex-col gap-4">
-      <div>
-        <h1 className="text-xl font-semibold">Partner Management</h1>
-        <p className="text-muted-foreground text-sm">
-          {partners.length} partner{partners.length === 1 ? "" : "s"}
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <h1 className="text-xl font-semibold">Partner Management</h1>
+          <p className="text-muted-foreground text-sm">
+            {partners.length} partner{partners.length === 1 ? "" : "s"}
+          </p>
+        </div>
+        <Button asChild size="sm">
+          <Link href="/admin/partners/new">New partner</Link>
+        </Button>
       </div>
 
       <form className="flex max-w-sm gap-2">
