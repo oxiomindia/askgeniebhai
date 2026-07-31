@@ -1,0 +1,6 @@
+-- Ask Genie Bhai — local development seed file.
+--
+-- Intentionally empty. Per docs/FLUTTERFLOW_SUPABASE_FOUNDATION.md and the
+-- implementation-foundation scope this repository operates under, no seed
+-- data, demo users, fake partners, or sample bookings are committed here.
+-- Add local-only fixtures on your own machine if needed; do not commit them.
