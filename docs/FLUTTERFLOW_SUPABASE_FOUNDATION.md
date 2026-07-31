@@ -1,11 +1,22 @@
 # FlutterFlow + Supabase Foundation
 
-Status: Proposed for review  
+Status: **Superseded** — see
+[ADR 0002](./adr/0002_FRONTEND_MIGRATION_NEXTJS.md)
 Repository: `oxiomindia/askgeniebhai`  
 Product: Ask Genie Bhai  
 Phase: Development foundation only
 
-## Foundation Decisions
+> FlutterFlow is no longer the canonical frontend for Ask Genie Bhai —
+> replaced by Next.js (see
+> [ADR 0002](./adr/0002_FRONTEND_MIGRATION_NEXTJS.md) and the
+> [Master Blueprint's Canonical Technology Stack](./00_ASK_GENIE_BHAI_BLUEPRINT.md#canonical-technology-stack)).
+> Every FlutterFlow-specific instruction below (connection steps,
+> branching strategy, project structure) no longer applies. The
+> Supabase-specific guidance in this document — RLS policy, environment
+> variable naming, authentication configuration, backup strategy — is
+> frontend-agnostic and still applies.
+
+## Foundation Decisions (historical)
 
 FlutterFlow is the primary frontend for Ask Genie Bhai v1.0.
 

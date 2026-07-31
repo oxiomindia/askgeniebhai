@@ -5,8 +5,8 @@ Repository: `oxiomindia/askgeniebhai`
 Phase: Documentation-only foundation
 
 > These guidelines apply to every future implementation PR, regardless of
-> which layer of the stack it touches (FlutterFlow custom code, Vercel
-> backend services, or any other approved surface).
+> which layer of the stack it touches (Next.js frontend code, Next.js
+> server-side code on Vercel, or any other approved surface).
 >
 > If anything in this document conflicts with the Master Blueprint, the
 > Master Blueprint is the canonical source and this document must be
@@ -19,12 +19,12 @@ Phase: Documentation-only foundation
 - **Keep it simple.** Prefer the simplest implementation that correctly
   solves the approved requirement. Do not build for hypothetical future
   requirements — extend when the requirement actually arrives.
-- **Strong TypeScript.** Any TypeScript code (Vercel backend services,
-  FlutterFlow custom code/actions) uses strict typing. No `any` without a
-  documented reason; prefer explicit types over inference where it aids
-  readability at a public boundary.
-- **Business logic outside UI.** UI components (FlutterFlow widgets,
-  future web components) render state and dispatch actions — they do not
+- **Strong TypeScript.** All TypeScript code (Next.js frontend and
+  server-side code) uses strict typing. No `any` without a documented
+  reason; prefer explicit types over inference where it aids readability
+  at a public boundary.
+- **Business logic outside UI.** UI components (React components) render
+  state and dispatch actions — they do not
   contain booking rules, pricing logic, or verification logic. That logic
   lives in `features/` or `services/` (see
   [Folder Strategy](#folder-strategy)) so it is testable independent of

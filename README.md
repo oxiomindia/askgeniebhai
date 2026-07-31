@@ -13,15 +13,16 @@ is a fully independent repository — see
 The canonical product and engineering documentation lives in
 [`docs/`](./docs). Read it before making any change:
 
-- [`docs/FLUTTERFLOW_SUPABASE_FOUNDATION.md`](./docs/FLUTTERFLOW_SUPABASE_FOUNDATION.md) — canonical stack, connection rules, RLS policy, branching strategy.
+- [`docs/00_ASK_GENIE_BHAI_BLUEPRINT.md`](./docs/00_ASK_GENIE_BHAI_BLUEPRINT.md) — the Master Blueprint; single source of truth.
+- [`docs/adr/0002_FRONTEND_MIGRATION_NEXTJS.md`](./docs/adr/0002_FRONTEND_MIGRATION_NEXTJS.md) — canonical frontend is Next.js (React, TypeScript, Tailwind CSS, shadcn/ui), replacing FlutterFlow.
+- [`docs/FLUTTERFLOW_SUPABASE_FOUNDATION.md`](./docs/FLUTTERFLOW_SUPABASE_FOUNDATION.md) — superseded for frontend guidance; its RLS/env-var/auth-config guidance still applies.
 - [`docs/REPOSITORY_GUARD.md`](./docs/REPOSITORY_GUARD.md) — repository isolation policy, enforced in CI.
 
-The Master Blueprint (`00_ASK_GENIE_BHAI_BLUEPRINT.md`), `ARCHITECTURE.md`,
-`DATABASE_BLUEPRINT.md`, `ENGINEERING_GUIDELINES.md`, `ROADMAP.md`,
-`UX_PRINCIPLES.md`, `PARTNER_QUALITY_STANDARDS.md`, and `docs/adr/` are
-proposed in PR #2 and are the source of truth this scaffold implements
-against once merged. If anything in this repository conflicts with that
-set, the Master Blueprint wins.
+`ARCHITECTURE.md`, `DATABASE_BLUEPRINT.md`, `ENGINEERING_GUIDELINES.md`,
+`ROADMAP.md`, `UX_PRINCIPLES.md`, `PARTNER_QUALITY_STANDARDS.md`, and
+`docs/adr/` are the rest of the canonical documentation set. If anything
+in this repository conflicts with the Master Blueprint, the Master
+Blueprint wins.
 
 ## Repository structure
 
@@ -35,11 +36,11 @@ supabase/
 .env.example          Names of every environment variable this project uses (no values)
 ```
 
-FlutterFlow's Flutter source is not committed to `main`. Per
-[docs/FLUTTERFLOW_SUPABASE_FOUNDATION.md § Recommended Repository Branching Strategy](./docs/FLUTTERFLOW_SUPABASE_FOUNDATION.md#recommended-repository-branching-strategy),
-FlutterFlow's GitHub export pushes to a `flutterflow` branch. `.gitignore`
-already excludes Flutter/Dart build artifacts so that branch stays clean
-regardless of what lands on it.
+The frontend is Next.js, built directly in this repository (see
+[docs/adr/0002_FRONTEND_MIGRATION_NEXTJS.md](./docs/adr/0002_FRONTEND_MIGRATION_NEXTJS.md)) —
+not FlutterFlow's GitHub export. `.gitignore` still excludes Flutter/Dart
+build artifacts for historical reasons but no Flutter code is expected in
+this repository going forward.
 
 ## Database
 
@@ -57,7 +58,8 @@ entity that attaches to `bookings` once Razorpay is integrated (Phase 2),
 and payments are out of scope for this foundation.
 
 Every table has Row Level Security enabled, per the mandatory RLS policy
-in `docs/FLUTTERFLOW_SUPABASE_FOUNDATION.md`. Discovery-relevant tables
+described in `docs/FLUTTERFLOW_SUPABASE_FOUNDATION.md` (still applicable —
+see [ADR 0002](./docs/adr/0002_FRONTEND_MIGRATION_NEXTJS.md)). Discovery-relevant tables
 (`partners`, `partner_locations`, `partner_services`, `availability`,
 `verification`, `reviews`, `media`) are readable by any authenticated
 user; `users`, `bookings`, `booking_status`, and `reviews` writes are
@@ -78,9 +80,9 @@ reserved for the service role until a Partner Dashboard (Phase 2) exists.
    supabase db push
    ```
    Or run a fully local stack with `supabase start` first.
-5. FlutterFlow: connect the project's Supabase integration per
-   [docs/FLUTTERFLOW_SUPABASE_FOUNDATION.md § FlutterFlow Connection](./docs/FLUTTERFLOW_SUPABASE_FOUNDATION.md#flutterflow-connection).
-   Do not hand-edit generated FlutterFlow code in this repository.
+5. The Next.js application (frontend) lives directly in this repository —
+   see [docs/adr/0002_FRONTEND_MIGRATION_NEXTJS.md](./docs/adr/0002_FRONTEND_MIGRATION_NEXTJS.md)
+   for the current canonical stack.
 
 No table has been created directly against the live `askgeniebhai`
 Supabase project by this scaffold — migrations here are reviewed through

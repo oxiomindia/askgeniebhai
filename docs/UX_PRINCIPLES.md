@@ -22,7 +22,7 @@ below is a specialization of that single goal.
 
 | Principle | What it means in practice |
 |---|---|
-| **Mobile-first** | Every screen is designed for a single hand, on the move, often with poor connectivity. There is no desktop-first or web-first design pass. |
+| **Mobile-first** | The Next.js web application (see [ADR 0002](./adr/0002_FRONTEND_MIGRATION_NEXTJS.md)) is designed for a phone browser first — single-hand use, on the move, often with poor connectivity — and adapted upward to larger screens, never designed desktop-first. |
 | **Minimal clicks** | Every screen removed from a flow is a win. The target is booking completion in the fewest taps physically possible for that transaction. |
 | **Fast loading** | Perceived speed is a feature. Screens must render meaningful content immediately, with data loading progressively rather than blocking on a spinner. |
 | **Large touch targets** | Travelers are often distracted, walking, or in poor lighting. Tap targets are sized for reliability, not visual density. |
