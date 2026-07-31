@@ -1,0 +1,9 @@
+.next/
+node_modules/
+
+# Hand-authored prose with deliberate line wrapping — not app code.
+docs/
+README.md
+
+# SQL migrations — not a language Prettier formats.
+supabase/
