@@ -1,11 +1,8 @@
 # Ask Genie Bhai — repository-wide ignores
 #
-# This repository's Flutter/Dart source is generated and pushed by
-# FlutterFlow's GitHub export (see docs/FLUTTERFLOW_SUPABASE_FOUNDATION.md
-# § Recommended Repository Branching Strategy) — typically to a
-# `flutterflow` branch, not committed here by hand. These ignores exist so
-# that whichever branch eventually holds that export never accumulates
-# build artifacts, caches, or local tooling state.
+# The Flutter/Dart ignores below predate ADR 0002 (frontend migrated to
+# Next.js) and are kept only in case any historical FlutterFlow branch
+# still exists; no Flutter code is expected in new work.
 
 # --- Environment / secrets ---
 .env
@@ -36,10 +33,13 @@
 *.ipr
 *.iws
 
-# --- Node / Vercel (future backend services) ---
+# --- Node / Next.js / Vercel ---
 node_modules/
 .next/
+out/
 .vercel/
+next-env.d.ts
+*.tsbuildinfo
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
