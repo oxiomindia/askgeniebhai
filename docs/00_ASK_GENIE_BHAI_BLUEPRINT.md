@@ -175,7 +175,7 @@ why execution speed is the product's core differentiator.
 
 | Layer | Technology | Status |
 |---|---|---|
-| Frontend | FlutterFlow | Canonical |
+| Frontend | Next.js 15 (React, TypeScript, Tailwind CSS, shadcn/ui) | Canonical |
 | Database | Supabase PostgreSQL | Canonical |
 | Authentication | Supabase Auth | Canonical |
 | File Storage | Cloudflare R2 | Canonical |
@@ -185,27 +185,27 @@ why execution speed is the product's core differentiator.
 
 ### Why each technology was selected
 
-**FlutterFlow (Frontend)**
-Ask Genie Bhai is mobile-first from day one. FlutterFlow allows rapid
-iteration on native-feeling Android and iOS experiences without the
-overhead of a fully custom mobile codebase, while still allowing custom
-code escape hatches when a required behavior cannot be modeled visually.
-Speed of iteration matters more at this stage than pixel-level control.
+**Next.js (Frontend)**
+Next.js 15 with React, TypeScript, Tailwind CSS, and shadcn/ui is the
+canonical frontend, replacing FlutterFlow (see
+[ADR 0002](./adr/0002_FRONTEND_MIGRATION_NEXTJS.md)). It runs on the
+existing Vercel project, giving the traveler-facing web application and
+any server-side logic a single deployable codebase with full control over
+markup, styling, and component behavior.
 
 **Supabase PostgreSQL (Database)**
 The product is fundamentally transactional and relational (users, partners,
 bookings, availability). A managed Postgres database gives strong
 relational modeling, real transactional guarantees, and an ecosystem
 (Row Level Security, auto-generated APIs) that maps directly onto a
-mobile-first client without requiring a custom backend for basic data
-access.
+web client without requiring a custom backend for basic data access.
 
 **Supabase Auth (Authentication)**
 Supabase Auth is selected because it is native to the same platform as the
 database and integrates directly with Row Level Security through JWTs.
 This lets data access be scoped to the authenticated user without
-exposing privileged credentials to the mobile client, and without
-standing up a separate identity system.
+exposing privileged credentials to the browser, and without standing up a
+separate identity system.
 
 **Cloudflare R2 (Storage)**
 Media and binary assets (partner photos, verification documents, proof of
@@ -216,11 +216,10 @@ delivery. Supabase Storage is explicitly not the canonical storage layer
 for this product.
 
 **Vercel (Hosting)**
-Vercel hosts the web surface (internal tooling, previews) and — more
-importantly — any future backend services that require server-side
-secrets: signed URL generation for R2, Razorpay order creation and webhook
-verification, and other privileged operations that must never live in the
-FlutterFlow client.
+Vercel hosts the Next.js application itself — frontend and server-side
+logic in one deployable codebase — plus any server-side secrets: signed
+URL generation for R2, Razorpay order creation and webhook verification,
+and other privileged operations that must never run in the browser.
 
 **Razorpay (Payments, future)**
 Razorpay is deferred until launch because the MVP intents can be validated
@@ -245,7 +244,7 @@ introduced only when an approved intent explicitly needs them (see
                            │
                            ▼
                     ┌──────────────┐
-                    │  FlutterFlow │   Mobile-first client (Android / iOS)
+                    │   Next.js    │   Web client (React/TypeScript, on Vercel)
                     └──────┬───────┘
                            │
                            ▼
@@ -274,10 +273,10 @@ introduced only when an approved intent explicitly needs them (see
 
 | Component | Responsibility |
 |---|---|
-| **FlutterFlow** | Mobile-first UI. Presents the five MVP intents, drives the booking lifecycle, and holds only client-safe credentials. |
+| **Next.js** | Web UI. Presents the five MVP intents, drives the booking lifecycle, and holds only client-safe credentials in browser-exposed code. |
 | **Supabase** | System of record for structured data (users, partners, bookings, availability). Owns authentication and enforces access control through Row Level Security. |
 | **Cloudflare R2** | Canonical store for media and binary assets — partner photos, verification documents, proof-of-service files — kept separate from transactional data. |
-| **Vercel** | Hosts any service that needs a server-side secret: R2 signed URLs, Razorpay order creation and webhook verification, and other privileged orchestration that cannot run in the mobile client. |
+| **Vercel** | Hosts the Next.js application (frontend and server-side logic) and any privileged orchestration that needs a server-side secret: R2 signed URLs, Razorpay order creation and webhook verification. |
 | **Razorpay** | Payment collection and payment lifecycle once payments are introduced (post-MVP). |
 
 See [ARCHITECTURE.md](./ARCHITECTURE.md) for the expanded architecture
@@ -459,8 +458,9 @@ The following must **NOT** be built during MVP:
 - No partner-facing dashboard or self-service partner tooling (Phase 2).
 - No push-notification infrastructure (Phase 2).
 - No AI-driven recommendation, chat, or assistance features (Phase 3).
-- No web-first or desktop-first customer experience — mobile is the only
-  MVP surface.
+- No native mobile app (iOS/Android) in this phase — the Next.js web
+  application is the sole canonical MVP surface (see
+  [ADR 0002](./adr/0002_FRONTEND_MIGRATION_NEXTJS.md)).
 - No custom backend service beyond what is required to support Supabase,
   R2, and (later) Razorpay integrations.
 
@@ -511,5 +511,6 @@ follow it, not the other way around.
 | [ENGINEERING_GUIDELINES.md](./ENGINEERING_GUIDELINES.md) | Coding philosophy, branch strategy, naming, organization |
 | [ROADMAP.md](./ROADMAP.md) | Short, medium, and long-term product and technical roadmap |
 | [adr/0001_PROJECT_FOUNDATION.md](./adr/0001_PROJECT_FOUNDATION.md) | Architecture Decision Record for the foundational decisions |
+| [adr/0002_FRONTEND_MIGRATION_NEXTJS.md](./adr/0002_FRONTEND_MIGRATION_NEXTJS.md) | ADR recording FlutterFlow's replacement by Next.js as canonical frontend |
 | [REPOSITORY_GUARD.md](./REPOSITORY_GUARD.md) | Repository isolation policy |
-| [FLUTTERFLOW_SUPABASE_FOUNDATION.md](./FLUTTERFLOW_SUPABASE_FOUNDATION.md) | Detailed FlutterFlow + Supabase connection foundation |
+| [FLUTTERFLOW_SUPABASE_FOUNDATION.md](./FLUTTERFLOW_SUPABASE_FOUNDATION.md) | Superseded by ADR 0002 — its Supabase-specific guidance (RLS, env vars, auth config) still applies regardless of frontend |

@@ -35,8 +35,8 @@ experience.
 - Freshen Up, Keep My Bags, Rest, Book a Cab, Book a Room — all five
   intents live, each completing the full
   [Booking Lifecycle](./00_ASK_GENIE_BHAI_BLUEPRINT.md#booking-lifecycle).
-- FlutterFlow mobile client connected to Supabase (PostgreSQL + Auth)
-  per [FLUTTERFLOW_SUPABASE_FOUNDATION.md](./FLUTTERFLOW_SUPABASE_FOUNDATION.md).
+- Next.js web client connected to Supabase (PostgreSQL + Auth) per
+  [ADR 0002](./adr/0002_FRONTEND_MIGRATION_NEXTJS.md).
 - Partner verification pipeline operating against
   [PARTNER_QUALITY_STANDARDS.md](./PARTNER_QUALITY_STANDARDS.md).
 - Cloudflare R2 storing partner and verification media.
@@ -100,7 +100,7 @@ one.
 
 | Phase | Technical milestones |
 |---|---|
-| Phase 1 | Supabase schema for core entities; RLS policies per entity; FlutterFlow ↔ Supabase connection; R2 bucket and access strategy; Vercel project scaffold for future server-side needs. |
+| Phase 1 | Supabase schema for core entities; RLS policies per entity; Next.js ↔ Supabase connection; R2 bucket and access strategy; Next.js app deployed on the existing Vercel project. |
 | Phase 2 | Vercel backend endpoints for Razorpay order creation/webhooks; partner-facing auth roles and RLS policies; notification delivery infrastructure. |
 | Phase 3 | Maps/geocoding provider integration; analytics pipeline; pricing engine; AI/LLM integration point (subject to a dedicated architecture document before implementation). |
 
