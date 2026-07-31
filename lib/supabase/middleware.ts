@@ -13,32 +13,44 @@ import type { Database } from "../../types/supabase";
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
-  const supabase = createServerClient<Database>(
-    env.supabaseUrl,
-    env.supabaseAnonKey,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value),
-          );
-          supabaseResponse = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options),
-          );
+  // The session refresh below is wrapped defensively: middleware runs on
+  // nearly every route (see the matcher in middleware.ts), so any exception
+  // here — a Supabase-side failure, a bad config value, anything unforeseen
+  // — must not take down the entire site. Falling back to `user: null` is
+  // safe either way: the caller treats a missing user as unauthenticated,
+  // which correctly still gates /admin while non-admin routes keep serving.
+  try {
+    const supabase = createServerClient<Database>(
+      env.supabaseUrl,
+      env.supabaseAnonKey,
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll();
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value }) =>
+              request.cookies.set(name, value),
+            );
+            supabaseResponse = NextResponse.next({ request });
+            cookiesToSet.forEach(({ name, value, options }) =>
+              supabaseResponse.cookies.set(name, value, options),
+            );
+          },
         },
       },
-    },
-  );
+    );
 
-  // Do not add logic between createServerClient and getUser — it revalidates
-  // the session token and must run on every request this middleware handles.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    // Do not add logic between createServerClient and getUser — it
+    // revalidates the session token and must run on every request this
+    // middleware handles.
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  return { response: supabaseResponse, user };
+    return { response: supabaseResponse, user };
+  } catch (error) {
+    console.error("updateSession: session refresh failed", error);
+    return { response: supabaseResponse, user: null };
+  }
 }
